@@ -12,10 +12,10 @@ def demo_inventory_crud():
 
     # CREATE
     create_payload = {
-        "card_id": 1,
+        "card_id": 4,
         "condition_id": 1,
-        "is_foil": 0,
-        "is_graded": 0,
+        "is_foil": False,
+        "is_graded": False,
         "graded_company": None,
         "grade": None,
         "quantity": 1,
@@ -23,8 +23,14 @@ def demo_inventory_crud():
         "purchase_date": "2026-02-18",
         "notes": "Created via API"
     }
+
     r = requests.post(f"{BASE}/inventory", json=create_payload)
+
+    print("POST /inventory status:", r.status_code)
+    print("POST /inventory body:", r.text)
+
     r.raise_for_status()
+
     item_id = r.json()["item_id"]
     print("Created item_id =", item_id)
 
@@ -39,6 +45,7 @@ def demo_inventory_crud():
         "quantity": 2,
         "notes": "Updated via API"
     }
+
     r = requests.patch(f"{BASE}/inventory/{item_id}", json=patch_payload)
     r.raise_for_status()
     print("PATCH result:", r.json())

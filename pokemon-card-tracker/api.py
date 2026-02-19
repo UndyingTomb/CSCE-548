@@ -287,15 +287,21 @@ def create_inventory(payload: InventoryCreate):
 def update_inventory(item_id: int, payload: InventoryUpdate):
     fields = {k: v for k, v in payload.model_dump().items() if v is not None}
     if not fields:
-        return {"updated": False, "reason": "no fields"}
-    ok = biz.update_inventory_item(item_id, **fields)
+        return {"ok": True, "updated": False, "reason": "no fields"}
+
+    try:
+        ok = biz.update_inventory_item(item_id, **fields)
+    except Exception as e:
+        raise HTTPException(400, str(e))
+
     if not ok:
         raise HTTPException(404, "Inventory item not found")
-    return {"updated": True}
+    return {"ok": True}
+
 
 @app.delete("/inventory/{item_id}")
 def delete_inventory(item_id: int):
     ok = biz.delete_inventory_item(item_id)
     if not ok:
         raise HTTPException(404, "Inventory item not found")
-    return {"deleted": True}
+    return {"ok": True}

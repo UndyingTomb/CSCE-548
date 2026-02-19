@@ -112,22 +112,36 @@ class PokemonCardBusiness:
         self.cond_repo.delete(condition_id)
         return True
 
-    # -----------------------
+       # -----------------------
     # INVENTORY (CRUD)
     # -----------------------
+    def _condition_exists(self, condition_id: int) -> bool:
+        return any(r["condition_id"] == condition_id for r in self.list_conditions())
+
     def create_inventory_item(self, **fields: Any) -> int:
-        # enforce some sanity before DB constraints explode
-        if fields.get("quantity", 1) < 0:
-            raise ValueError("quantity must be >= 0")
-        if fields.get("purchase_price", 0.0) < 0:
+        # REQUIRED existence checks (prevents DB constraint explosions)
+        card_id = int(fields.get("card_id", 0))
+        condition_id = int(fields.get("condition_id", 0))
+
+        if not self.get_card(card_id):
+            raise ValueError(f"card_id {card_id} does not exist")
+        if not self._condition_exists(condition_id):
+            raise ValueError(f"condition_id {condition_id} does not exist")
+
+        # enforce sanity
+        if fields.get("quantity", 1) < 1:
+            raise ValueError("quantity must be >= 1")
+
+        purchase_price = fields.get("purchase_price", 0.0)
+        if purchase_price is not None and purchase_price < 0:
             raise ValueError("purchase_price must be >= 0")
 
+        # graded rules
         is_graded = int(fields.get("is_graded", 0))
         if is_graded == 1:
             if fields.get("graded_company") is None or fields.get("grade") is None:
                 raise ValueError("graded_company and grade required if is_graded=1")
         else:
-            # match your DB constraint expectation
             fields["graded_company"] = None
             fields["grade"] = None
 
@@ -143,8 +157,40 @@ class PokemonCardBusiness:
         return self.inv_repo.get_by_id(item_id)
 
     def update_inventory_item(self, item_id: int, **fields: Any) -> bool:
-        if not self.get_inventory_item(item_id):
+        current = self.get_inventory_item(item_id)
+        if not current:
             return False
+
+        # if card_id/condition_id are being changed, validate they exist
+        if "card_id" in fields and fields["card_id"] is not None:
+            if not self.get_card(int(fields["card_id"])):
+                raise ValueError(f"card_id {fields['card_id']} does not exist")
+
+        if "condition_id" in fields and fields["condition_id"] is not None:
+            if not self._condition_exists(int(fields["condition_id"])):
+                raise ValueError(f"condition_id {fields['condition_id']} does not exist")
+
+        # enforce sanity if provided
+        if "quantity" in fields and fields["quantity"] is not None and fields["quantity"] < 1:
+            raise ValueError("quantity must be >= 1")
+
+        if "purchase_price" in fields and fields["purchase_price"] is not None and fields["purchase_price"] < 0:
+            raise ValueError("purchase_price must be >= 0")
+
+        # graded rules on UPDATE too:
+        # - if is_graded set to 0 -> clear grade fields
+        # - if is_graded set to 1 -> require graded_company/grade either in update OR already present
+        if "is_graded" in fields and fields["is_graded"] is not None:
+            is_graded = int(fields["is_graded"])
+            if is_graded == 0:
+                fields["graded_company"] = None
+                fields["grade"] = None
+            else:
+                graded_company = fields.get("graded_company", current.get("graded_company"))
+                grade = fields.get("grade", current.get("grade"))
+                if graded_company is None or grade is None:
+                    raise ValueError("graded_company and grade required if is_graded=1")
+
         self.inv_repo.update(item_id, **fields)
         return True
 
