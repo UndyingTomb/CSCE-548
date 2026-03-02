@@ -68,3 +68,4 @@ VALUES
 (58, 58, 2, 0, NULL, NULL, 1, 2.00, '2025-08-01', 'Marnie''s Pride'),
 (59, 59, 1, 0, NULL, NULL, 1, 0.25, '2025-08-02', 'Ultra Ball'),
 (60, 60, 1, 0, NULL, NULL, 1, 0.25, '2025-08-02', 'Choice Belt');
+(61, 1, 3, 0, NULL, NULL, 1, 12.00, '2025-01-12', 'Snorlax V pulled'),
