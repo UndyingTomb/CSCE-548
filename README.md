@@ -172,7 +172,7 @@ The following functionality was tested:
 
 Complete deployment instructions and screenshots are provided in:
 
-Project4_Deployment_System_Test.pdf
+Deployment + System Test Document .pdf
 
 ------------------------------------------------------------------------
 
@@ -184,7 +184,3 @@ https://github.com/UndyingTomb/CSCE-548
 
 ------------------------------------------------------------------------
 
-## Notes
-
-This project was completed for CSCE 548 and demonstrates building a
-multi-tier application using generative AI assistance.
