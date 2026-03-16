@@ -3,168 +3,393 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pokemon Card Tracker - Project 3 Client</title>
+  <title>Pokémon Card Collection Viewer</title>
   <style>
-    body { font-family: system-ui, Arial, sans-serif; margin: 16px; }
-    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
-    input, select, button { padding:8px; font-size:14px; }
-    button { cursor:pointer; }
-    .card { border:1px solid #ddd; border-radius:10px; padding:12px; margin-top:12px; }
-    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px; }
-    pre { background:#0b1020; color:#d6e4ff; padding:12px; border-radius:10px; overflow:auto; }
-    .muted { color:#666; }
-    .ok { color:#0a7a2f; font-weight:600; }
-    .bad { color:#b00020; font-weight:600; }
-    .tabs button { border:1px solid #ddd; background:#f7f7f7; border-radius:999px; }
-    .tabs button.active { background:#0b5fff; color:white; border-color:#0b5fff; }
-    .hint { font-size: 13px; color:#444; }
-    code { background:#f0f0f0; padding:2px 6px; border-radius:6px; }
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #dbe3ee;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #15803d;
+      --danger: #b91c1c;
+      --response-bg: #0f172a;
+      --response-text: #e2e8f0;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 1.35rem;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    input, select, button {
+      font: inherit;
+    }
+
+    input, select {
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: white;
+      min-height: 44px;
+    }
+
+    input {
+      min-width: 180px;
+    }
+
+    .base-url {
+      min-width: 320px;
+      flex: 1;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 16px;
+      min-height: 44px;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.05s ease;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tabs button {
+      background: #e8eefc;
+      color: #1e3a8a;
+      border: 1px solid #c7d7fe;
+    }
+
+    .tabs button.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .action-card {
+      background: #fbfcfe;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .action-card p {
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .status {
+      font-weight: 700;
+    }
+
+    .ok { color: var(--success); }
+    .bad { color: var(--danger); }
+    .muted { color: var(--muted); }
+
+    .response-header {
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    pre {
+      margin: 0;
+      background: var(--response-bg);
+      color: var(--response-text);
+      border-radius: 14px;
+      padding: 18px;
+      overflow: auto;
+      min-height: 280px;
+      font-size: 0.95rem;
+    }
+
+    .tip {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 8px;
+    }
+
+    .section-title {
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      .base-url,
+      input,
+      select {
+        min-width: 100%;
+        width: 100%;
+      }
+
+      .row {
+        align-items: stretch;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Pokemon Card Tracker — Project 3 Client</h1>
-  <p class="muted">
-    This client calls GET endpoints for all tables: get all, get one, and get subset (filter).
-  </p>
-
-  <div class="card">
-    <div class="row">
-      <label><b>API Base URL:</b></label>
-      <input id="baseUrl" style="min-width:320px" value="http://127.0.0.1:8000" />
-      <button id="btnPing">Ping</button>
-      <span id="pingStatus" class="muted"></span>
-    </div>
-    <p class="hint">
-      Client runs at <code>http://127.0.0.1:5500</code>, API runs at <code>http://127.0.0.1:8000</code>.
+  <div class="page">
+    <h1>Pokémon Card Collection Viewer</h1>
+    <p class="subtitle">
+      Browse card sets, individual cards, card conditions, and inventory in a simple way.
     </p>
-  </div>
 
-  <div class="card tabs row">
-    <button data-tab="conditions" class="active">Conditions</button>
-    <button data-tab="sets">Sets</button>
-    <button data-tab="cards">Cards</button>
-    <button data-tab="inventory">Inventory</button>
-  </div>
-
-  <!-- CONDITIONS -->
-  <section id="tab-conditions" class="card">
-    <h2>Conditions (GET all, GET one, GET subset)</h2>
-    <div class="grid">
-      <div class="card">
-        <h3>GET /conditions (all)</h3>
-        <button onclick="getAll('conditions')">Load all conditions</button>
-      </div>
-
-      <div class="card">
-        <h3>GET /conditions/{id} (single)</h3>
+    <div class="panel">
+      <div class="stack">
+        <label for="baseUrl">Website connection</label>
         <div class="row">
-          <input id="conditionsId" type="number" placeholder="condition_id" />
-          <button onclick="getOne('conditions','conditionsId')">Get by ID</button>
+          <input id="baseUrl" class="base-url" value="http://127.0.0.1:8000" />
+          <button id="btnPing">Check Connection</button>
+          <span id="pingStatus" class="status muted">Not checked yet</span>
         </div>
-      </div>
-
-      <div class="card">
-        <h3>GET /conditions?query=... (subset)</h3>
-        <div class="row">
-          <input id="conditionsQuery" placeholder="search (e.g., NM)" />
-          <button onclick="getSubset('conditions', { query: val('conditionsQuery') })">Filter</button>
-        </div>
+        <p class="tip">
+          This should usually stay as <strong>http://127.0.0.1:8000</strong> when running locally.
+        </p>
       </div>
     </div>
-  </section>
 
-  <!-- SETS -->
-  <section id="tab-sets" class="card" style="display:none">
-    <h2>Sets (GET all, GET one, GET subset)</h2>
-    <div class="grid">
-      <div class="card">
-        <h3>GET /sets (all)</h3>
-        <button onclick="getAll('sets')">Load all sets</button>
-      </div>
-
-      <div class="card">
-        <h3>GET /sets/{id} (single)</h3>
-        <div class="row">
-          <input id="setsId" type="number" placeholder="set_id" />
-          <button onclick="getOne('sets','setsId')">Get by ID</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>GET /sets?set_code=... (subset)</h3>
-        <div class="row">
-          <input id="setsCode" placeholder="set_code (e.g., SWSH1)" />
-          <button onclick="getSubset('sets', { set_code: val('setsCode') })">Filter</button>
-        </div>
+    <div class="panel">
+      <div class="tabs">
+        <button data-tab="conditions" class="active">Card Conditions</button>
+        <button data-tab="sets">Card Sets</button>
+        <button data-tab="cards">Cards</button>
+        <button data-tab="inventory">Inventory</button>
       </div>
     </div>
-  </section>
 
-  <!-- CARDS -->
-  <section id="tab-cards" class="card" style="display:none">
-    <h2>Cards (GET all, GET one, GET subset)</h2>
-    <div class="grid">
-      <div class="card">
-        <h3>GET /cards (all)</h3>
-        <button onclick="getAll('cards')">Load all cards</button>
+    <!-- CONDITIONS -->
+    <section id="tab-conditions" class="panel">
+      <div class="section-title">
+        <h2>Card Conditions</h2>
       </div>
+      <div class="grid">
+        <div class="action-card">
+          <h3>See all card conditions</h3>
+          <p>Shows every condition available in the database.</p>
+          <button onclick="getAll('conditions')">Show All Conditions</button>
+        </div>
 
-      <div class="card">
-        <h3>GET /cards/{id} (single)</h3>
-        <div class="row">
-          <input id="cardsId" type="number" placeholder="card_id" />
-          <button onclick="getOne('cards','cardsId')">Get by ID</button>
+        <div class="action-card">
+          <h3>Find one condition by ID</h3>
+          <p>Use a condition number to look up one exact record.</p>
+          <div class="stack">
+            <input id="conditionsId" type="number" placeholder="Enter condition ID" />
+            <button onclick="getOne('conditions','conditionsId')">Find Condition</button>
+          </div>
+        </div>
+
+        <div class="action-card">
+          <h3>Search card conditions</h3>
+          <p>Search by text such as NM, Mint, or description words.</p>
+          <div class="stack">
+            <input id="conditionsQuery" placeholder="Type a search word" />
+            <button onclick="getSubset('conditions', { query: val('conditionsQuery') })">Search Conditions</button>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="card">
-        <h3>GET /cards?set_id=...&rarity=... (subset)</h3>
-        <div class="row">
-          <input id="cardsSetId" type="number" placeholder="set_id (e.g., 1)" />
-          <input id="cardsRarity" placeholder="rarity (e.g., Rare)" />
-          <button onclick="getSubset('cards', { set_id: val('cardsSetId'), rarity: val('cardsRarity') })">Filter</button>
-        </div>
-        <p class="hint">Subset demo: filter by set + rarity.</p>
+    <!-- SETS -->
+    <section id="tab-sets" class="panel" style="display:none">
+      <div class="section-title">
+        <h2>Card Sets</h2>
       </div>
+      <div class="grid">
+        <div class="action-card">
+          <h3>See all card sets</h3>
+          <p>Shows every card set in the collection database.</p>
+          <button onclick="getAll('sets')">Show All Sets</button>
+        </div>
+
+        <div class="action-card">
+          <h3>Find one set by ID</h3>
+          <p>Look up a single set using its set ID number.</p>
+          <div class="stack">
+            <input id="setsId" type="number" placeholder="Enter set ID" />
+            <button onclick="getOne('sets','setsId')">Find Set</button>
+          </div>
+        </div>
+
+        <div class="action-card">
+          <h3>Search sets by set code</h3>
+          <p>Example: SWSH1</p>
+          <div class="stack">
+            <input id="setsCode" placeholder="Enter set code" />
+            <button onclick="getSubset('sets', { set_code: val('setsCode') })">Search Sets</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARDS -->
+    <section id="tab-cards" class="panel" style="display:none">
+      <div class="section-title">
+        <h2>Cards</h2>
+      </div>
+      <div class="grid">
+        <div class="action-card">
+          <h3>See all cards</h3>
+          <p>Shows every card stored in the database.</p>
+          <button onclick="getAll('cards')">Show All Cards</button>
+        </div>
+
+        <div class="action-card">
+          <h3>Find one card by ID</h3>
+          <p>Use the card ID to view one exact card record.</p>
+          <div class="stack">
+            <input id="cardsId" type="number" placeholder="Enter card ID" />
+            <button onclick="getOne('cards','cardsId')">Find Card</button>
+          </div>
+        </div>
+
+        <div class="action-card">
+          <h3>Filter cards by set and rarity</h3>
+          <p>Example: set 1 and rarity Rare</p>
+          <div class="stack">
+            <input id="cardsSetId" type="number" placeholder="Enter set ID" />
+            <input id="cardsRarity" placeholder="Enter rarity" />
+            <button onclick="getSubset('cards', { set_id: val('cardsSetId'), rarity: val('cardsRarity') })">Filter Cards</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INVENTORY -->
+    <section id="tab-inventory" class="panel" style="display:none">
+      <div class="section-title">
+        <h2>Inventory</h2>
+      </div>
+      <div class="grid">
+        <div class="action-card">
+          <h3>See all inventory items</h3>
+          <p>Shows every card currently in inventory.</p>
+          <button onclick="getAll('inventory')">Show All Inventory</button>
+        </div>
+
+        <div class="action-card">
+          <h3>Find one inventory item by ID</h3>
+          <p>Use the inventory item ID to view one record.</p>
+          <div class="stack">
+            <input id="inventoryId" type="number" placeholder="Enter inventory item ID" />
+            <button onclick="getOne('inventory','inventoryId')">Find Inventory Item</button>
+          </div>
+        </div>
+
+        <div class="action-card">
+          <h3>Filter by graded status</h3>
+          <p>Choose whether to show graded or ungraded items only.</p>
+          <div class="stack">
+            <select id="invIsGraded">
+              <option value="">Choose one</option>
+              <option value="1">Show graded items</option>
+              <option value="0">Show ungraded items</option>
+            </select>
+            <button onclick="getSubset('inventory', { is_graded: val('invIsGraded') })">Filter Inventory</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="panel">
+      <h2>Results</h2>
+      <div id="lastCall" class="response-header">No request yet</div>
+      <pre id="output">{}</pre>
     </div>
-  </section>
-
-  <!-- INVENTORY -->
-  <section id="tab-inventory" class="card" style="display:none">
-    <h2>Inventory (GET all, GET one, GET subset)</h2>
-    <div class="grid">
-      <div class="card">
-        <h3>GET /inventory (all)</h3>
-        <button onclick="getAll('inventory')">Load all inventory</button>
-      </div>
-
-      <div class="card">
-        <h3>GET /inventory/{id} (single)</h3>
-        <div class="row">
-          <input id="inventoryId" type="number" placeholder="item_id" />
-          <button onclick="getOne('inventory','inventoryId')">Get by ID</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>GET /inventory?is_graded=... (subset)</h3>
-        <div class="row">
-          <select id="invIsGraded">
-            <option value="">(no filter)</option>
-            <option value="1">Graded (1)</option>
-            <option value="0">Not graded (0)</option>
-          </select>
-          <button onclick="getSubset('inventory', { is_graded: val('invIsGraded') })">Filter</button>
-        </div>
-        <p class="hint">Subset demo: show only graded or only ungraded items.</p>
-      </div>
-    </div>
-  </section>
-
-  <div class="card">
-    <h2>Response</h2>
-    <div id="lastCall" class="muted"></div>
-    <pre id="output">{}</pre>
   </div>
 
 <script>
@@ -219,7 +444,10 @@
 
   async function getOne(resource, inputId) {
     const id = val(inputId);
-    if (!id) return out({ error: "Please enter an ID first." });
+    if (!id) {
+      out({ error: "Please enter an ID first." });
+      return;
+    }
     await apiGet(`/${resource}/${id}`);
   }
 
@@ -229,15 +457,16 @@
 
   document.getElementById("btnPing").addEventListener("click", async () => {
     const el = document.getElementById("pingStatus");
-    el.textContent = "Pinging...";
-    el.className = "muted";
+    el.textContent = "Checking...";
+    el.className = "status muted";
+
     try {
       await apiGet("/conditions");
-      el.textContent = "OK (API reachable)";
-      el.className = "ok";
+      el.textContent = "Connected";
+      el.className = "status ok";
     } catch (e) {
-      el.textContent = "FAILED (check base URL, server running, and CORS)";
-      el.className = "bad";
+      el.textContent = "Connection failed";
+      el.className = "status bad";
     }
   });
 
@@ -250,7 +479,7 @@
       document.querySelectorAll("section[id^='tab-']").forEach(s => s.style.display = "none");
       document.getElementById(`tab-${tab}`).style.display = "";
       out({});
-      document.getElementById("lastCall").textContent = "";
+      document.getElementById("lastCall").textContent = "No request yet";
     });
   });
 </script>
