@@ -73,4 +73,5 @@ pokemon-card-tracker
 Course
 
 University of South Carolina
-CSCE 548 – Software Architecture
+CSCE 548 - Building Secure Software
+
