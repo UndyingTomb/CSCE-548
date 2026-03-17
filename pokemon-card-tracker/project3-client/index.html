@@ -15,8 +15,6 @@
       --primary-dark: #1d4ed8;
       --success: #15803d;
       --danger: #b91c1c;
-      --response-bg: #0f172a;
-      --response-text: #e2e8f0;
       --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
       --radius: 16px;
     }
@@ -174,19 +172,74 @@
     .muted { color: var(--muted); }
 
     .response-header {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       color: var(--muted);
       font-size: 0.95rem;
     }
 
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .result-card {
+      background: #fbfcfe;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .result-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .result-subtitle {
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-size: 0.92rem;
+    }
+
+    .result-line {
+      margin: 4px 0;
+      font-size: 0.95rem;
+    }
+
+    .result-line strong {
+      display: inline-block;
+      min-width: 112px;
+    }
+
+    .result-empty {
+      padding: 18px;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      color: var(--muted);
+      background: #fafcff;
+    }
+
+    details {
+      margin-top: 12px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+
     pre {
       margin: 0;
-      background: var(--response-bg);
-      color: var(--response-text);
+      background: #0f172a;
+      color: #e2e8f0;
       border-radius: 14px;
       padding: 18px;
       overflow: auto;
-      min-height: 280px;
+      min-height: 180px;
       font-size: 0.95rem;
     }
 
@@ -201,24 +254,13 @@
     }
 
     @media (max-width: 640px) {
-      h1 {
-        font-size: 1.6rem;
-      }
-
-      .base-url,
-      input,
-      select {
+      h1 { font-size: 1.6rem; }
+      .base-url, input, select {
         min-width: 100%;
         width: 100%;
       }
-
-      .row {
-        align-items: stretch;
-      }
-
-      button {
-        width: 100%;
-      }
+      .row { align-items: stretch; }
+      button { width: 100%; }
     }
   </style>
 </head>
@@ -226,7 +268,7 @@
   <div class="page">
     <h1>Pokémon Card Collection Viewer</h1>
     <p class="subtitle">
-      Browse card sets, individual cards, card conditions, and inventory in a simple way.
+      Browse card sets, cards, card conditions, and inventory in a simple way.
     </p>
 
     <div class="panel">
@@ -238,7 +280,7 @@
           <span id="pingStatus" class="status muted">Not checked yet</span>
         </div>
         <p class="tip">
-          This should usually stay as <strong>http://127.0.0.1:8000</strong> when running locally.
+          This should usually stay as <strong>http://127.0.0.1:8000</strong>.
         </p>
       </div>
     </div>
@@ -252,18 +294,14 @@
       </div>
     </div>
 
-    <!-- CONDITIONS -->
     <section id="tab-conditions" class="panel">
-      <div class="section-title">
-        <h2>Card Conditions</h2>
-      </div>
+      <div class="section-title"><h2>Card Conditions</h2></div>
       <div class="grid">
         <div class="action-card">
           <h3>See all card conditions</h3>
           <p>Shows every condition available in the database.</p>
           <button onclick="getAll('conditions')">Show All Conditions</button>
         </div>
-
         <div class="action-card">
           <h3>Find one condition by ID</h3>
           <p>Use a condition number to look up one exact record.</p>
@@ -272,7 +310,6 @@
             <button onclick="getOne('conditions','conditionsId')">Find Condition</button>
           </div>
         </div>
-
         <div class="action-card">
           <h3>Search card conditions</h3>
           <p>Search by text such as NM, Mint, or description words.</p>
@@ -284,18 +321,14 @@
       </div>
     </section>
 
-    <!-- SETS -->
     <section id="tab-sets" class="panel" style="display:none">
-      <div class="section-title">
-        <h2>Card Sets</h2>
-      </div>
+      <div class="section-title"><h2>Card Sets</h2></div>
       <div class="grid">
         <div class="action-card">
           <h3>See all card sets</h3>
           <p>Shows every card set in the collection database.</p>
           <button onclick="getAll('sets')">Show All Sets</button>
         </div>
-
         <div class="action-card">
           <h3>Find one set by ID</h3>
           <p>Look up a single set using its set ID number.</p>
@@ -304,7 +337,6 @@
             <button onclick="getOne('sets','setsId')">Find Set</button>
           </div>
         </div>
-
         <div class="action-card">
           <h3>Search sets by set code</h3>
           <p>Example: SWSH1</p>
@@ -316,18 +348,14 @@
       </div>
     </section>
 
-    <!-- CARDS -->
     <section id="tab-cards" class="panel" style="display:none">
-      <div class="section-title">
-        <h2>Cards</h2>
-      </div>
+      <div class="section-title"><h2>Cards</h2></div>
       <div class="grid">
         <div class="action-card">
           <h3>See all cards</h3>
           <p>Shows every card stored in the database.</p>
           <button onclick="getAll('cards')">Show All Cards</button>
         </div>
-
         <div class="action-card">
           <h3>Find one card by ID</h3>
           <p>Use the card ID to view one exact card record.</p>
@@ -336,7 +364,6 @@
             <button onclick="getOne('cards','cardsId')">Find Card</button>
           </div>
         </div>
-
         <div class="action-card">
           <h3>Filter cards by set and rarity</h3>
           <p>Example: set 1 and rarity Rare</p>
@@ -349,18 +376,14 @@
       </div>
     </section>
 
-    <!-- INVENTORY -->
     <section id="tab-inventory" class="panel" style="display:none">
-      <div class="section-title">
-        <h2>Inventory</h2>
-      </div>
+      <div class="section-title"><h2>Inventory</h2></div>
       <div class="grid">
         <div class="action-card">
           <h3>See all inventory items</h3>
           <p>Shows every card currently in inventory.</p>
           <button onclick="getAll('inventory')">Show All Inventory</button>
         </div>
-
         <div class="action-card">
           <h3>Find one inventory item by ID</h3>
           <p>Use the inventory item ID to view one record.</p>
@@ -369,7 +392,6 @@
             <button onclick="getOne('inventory','inventoryId')">Find Inventory Item</button>
           </div>
         </div>
-
         <div class="action-card">
           <h3>Filter by graded status</h3>
           <p>Choose whether to show graded or ungraded items only.</p>
@@ -388,12 +410,16 @@
     <div class="panel">
       <h2>Results</h2>
       <div id="lastCall" class="response-header">No request yet</div>
-      <pre id="output">{}</pre>
+      <div id="prettyResults" class="result-empty">Your results will appear here.</div>
+      <details>
+        <summary>Show raw JSON</summary>
+        <pre id="output">{}</pre>
+      </details>
     </div>
   </div>
 
 <script>
-  const out = (obj) => {
+  const outRaw = (obj) => {
     document.getElementById("output").textContent =
       (typeof obj === "string") ? obj : JSON.stringify(obj, null, 2);
   };
@@ -419,6 +445,137 @@
     return "?" + sp.toString();
   }
 
+  function currentTabName() {
+    const active = document.querySelector(".tabs button.active");
+    return active ? active.dataset.tab : "";
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function line(label, value) {
+    return `<div class="result-line"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value ?? "")}</div>`;
+  }
+
+  function renderCondition(item) {
+    return `
+      <div class="result-card">
+        <div class="result-title">${escapeHtml(item.condition_code || "Condition")}</div>
+        <div class="result-subtitle">Condition ID: ${escapeHtml(item.condition_id)}</div>
+        ${line("Description", item.description)}
+      </div>
+    `;
+  }
+
+  function renderSet(item) {
+    return `
+      <div class="result-card">
+        <div class="result-title">${escapeHtml(item.set_name || "Set")}</div>
+        <div class="result-subtitle">${escapeHtml(item.set_code || "")}</div>
+        ${line("Set ID", item.set_id)}
+        ${line("Release Date", item.release_date)}
+        ${line("Era", item.era)}
+      </div>
+    `;
+  }
+
+  function renderCard(item) {
+    return `
+      <div class="result-card">
+        <div class="result-title">${escapeHtml(item.card_name || "Card")}</div>
+        <div class="result-subtitle">${escapeHtml(item.set_code || "")} • ${escapeHtml(item.card_number || "")}</div>
+        ${line("Card ID", item.card_id)}
+        ${line("Rarity", item.rarity)}
+        ${line("Type", item.card_type)}
+        ${line("Set ID", item.set_id)}
+      </div>
+    `;
+  }
+
+  function renderInventory(item) {
+    const gradedText = Number(item.is_graded) === 1 ? "Yes" : "No";
+    const gradeInfo = Number(item.is_graded) === 1
+      ? `${item.graded_company || ""} ${item.grade || ""}`.trim()
+      : "Not graded";
+
+    return `
+      <div class="result-card">
+        <div class="result-title">${escapeHtml(item.card_name || "Inventory Item")}</div>
+        <div class="result-subtitle">${escapeHtml(item.set_code || "")} • ${escapeHtml(item.card_number || "")}</div>
+        ${line("Item ID", item.item_id)}
+        ${line("Quantity", item.quantity)}
+        ${line("Condition", item.condition_code || item.condition_id)}
+        ${line("Graded", gradedText)}
+        ${line("Grade Info", gradeInfo)}
+        ${line("Price Paid", item.purchase_price)}
+        ${line("Purchase Date", item.purchase_date)}
+        ${line("Notes", item.notes)}
+      </div>
+    `;
+  }
+
+  function renderGeneric(item) {
+    return `
+      <div class="result-card">
+        <div class="result-title">Record</div>
+        ${Object.entries(item).map(([k, v]) => line(k, v)).join("")}
+      </div>
+    `;
+  }
+
+  function renderPretty(data) {
+    const box = document.getElementById("prettyResults");
+
+    if (data == null) {
+      box.className = "result-empty";
+      box.innerHTML = "No results found.";
+      return;
+    }
+
+    if (typeof data === "string") {
+      box.className = "result-empty";
+      box.textContent = data;
+      return;
+    }
+
+    const tab = currentTabName();
+
+    if (Array.isArray(data)) {
+      if (data.length === 0) {
+        box.className = "result-empty";
+        box.innerHTML = "No matching results were found.";
+        return;
+      }
+
+      box.className = "results-grid";
+
+      let renderer = renderGeneric;
+      if (tab === "conditions") renderer = renderCondition;
+      if (tab === "sets") renderer = renderSet;
+      if (tab === "cards") renderer = renderCard;
+      if (tab === "inventory") renderer = renderInventory;
+
+      box.innerHTML = data.map(renderer).join("");
+      return;
+    }
+
+    box.className = "results-grid";
+
+    let renderer = renderGeneric;
+    if (tab === "conditions") renderer = renderCondition;
+    if (tab === "sets") renderer = renderSet;
+    if (tab === "cards") renderer = renderCard;
+    if (tab === "inventory") renderer = renderInventory;
+
+    box.innerHTML = renderer(data);
+  }
+
   async function apiGet(path) {
     const url = base() + path;
     setLastCall("GET", url);
@@ -429,12 +586,14 @@
     let data;
     try { data = JSON.parse(text); } catch { data = text; }
 
+    outRaw(data);
+
     if (!resp.ok) {
-      out({ error: `HTTP ${resp.status}`, detail: data });
+      renderPretty({ error: `HTTP ${resp.status}`, detail: typeof data === "string" ? data : JSON.stringify(data) });
       throw new Error(`HTTP ${resp.status}`);
     }
 
-    out(data);
+    renderPretty(data);
     return data;
   }
 
@@ -445,7 +604,9 @@
   async function getOne(resource, inputId) {
     const id = val(inputId);
     if (!id) {
-      out({ error: "Please enter an ID first." });
+      const err = { error: "Please enter an ID first." };
+      outRaw(err);
+      renderPretty(err);
       return;
     }
     await apiGet(`/${resource}/${id}`);
@@ -478,7 +639,10 @@
       const tab = btn.dataset.tab;
       document.querySelectorAll("section[id^='tab-']").forEach(s => s.style.display = "none");
       document.getElementById(`tab-${tab}`).style.display = "";
-      out({});
+
+      document.getElementById("prettyResults").className = "result-empty";
+      document.getElementById("prettyResults").innerHTML = "Your results will appear here.";
+      outRaw({});
       document.getElementById("lastCall").textContent = "No request yet";
     });
   });
